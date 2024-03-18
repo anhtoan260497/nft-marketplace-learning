@@ -10,6 +10,8 @@ error NftMarketplace__AlreadyListed(address nftAddress, uint256 tokenId);
 error NftMarketplace__NotNftOwnerForListing();
 error NftMarketplace__NotListed(address nftAddress, uint256 tokenId);
 error NftMarketplace__NotEnoughBalanceToBuy(address nftAddress, uint256 tokenId, uint256 price);
+error NftMarketplace__NotHasProceedToWidthdraw();
+error NftMarketplace__TransferFailed();
 
 contract NftMarketplace is ReentrancyGuard {
     struct Listing {
@@ -30,6 +32,15 @@ contract NftMarketplace is ReentrancyGuard {
         uint256 indexed tokenId,
         uint256 price
     );
+
+    event ItemUpdate (
+        address indexed nftAddress,
+        uint256 indexed tokenId,
+        address indexed seller,
+        uint256 newPrice
+    );
+
+    event ItemCancel(address indexed nftAddress, uint256 indexed tokenId, address indexed seller);
 
     mapping(address => mapping(uint256 => Listing)) private s_listing; // s_listing : {address : { tokenid : { price, seller }}}
     mapping(address => uint256) private s_proceeds;
@@ -93,5 +104,38 @@ contract NftMarketplace is ReentrancyGuard {
         emit ItemBought(msg.sender, nftAddress, tokenId, listedItem.price);
     }
 
-    
+    function cancelListing(
+        address nftAddress,
+        uint256 tokenId
+    ) external isListed(nftAddress, tokenId) isNftOwner(nftAddress, tokenId, msg.sender) {
+        delete s_listing[nftAddress][tokenId];
+        emit ItemCancel(nftAddress, tokenId, msg.sender);
+    }
+
+    function updateListing(
+        address nftAddress,
+        uint256 tokenId,
+        uint256 newPrice
+    ) external isListed(nftAddress, tokenId) isNftOwner(nftAddress, tokenId, msg.sender) {
+        s_listing[nftAddress][tokenId].price = newPrice;
+        emit ItemUpdate(nftAddress, tokenId, msg.sender, newPrice) ;
+    }
+
+    function widthdrawProceeeds () external {
+        uint256 proceeds = s_proceeds[msg.sender];
+        if(proceeds <= 0 ) revert NftMarketplace__NotHasProceedToWidthdraw();
+        s_proceeds[msg.sender] = 0;
+        (bool success,) = payable(msg.sender).call{value : proceeds}("");
+        if(!success) revert NftMarketplace__TransferFailed();
+    }
+
+    // Getter Functions
+
+    function getListing(address nftAddress, uint256 tokenId) external view returns(Listing memory) {
+        return s_listing[nftAddress][tokenId];
+    }
+
+    function getProceeds(address seller) external view returns(uint256){
+        return s_proceeds[seller];
+    }
 }
