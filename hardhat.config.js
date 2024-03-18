@@ -1,6 +1,6 @@
 require("@nomiclabs/hardhat-waffle")
 require("@nomiclabs/hardhat-etherscan")
-// require("hardhat-deploy")
+require("hardhat-deploy")
 require("solidity-coverage")
 require("hardhat-gas-reporter")
 require("hardhat-contract-sizer")
@@ -40,15 +40,15 @@ module.exports = {
         localhost: {
             chainId: 31337,
         },
-        // sepolia: {
-        //     url: SEPOLIA_RPC_URL,
-        //     accounts: PRIVATE_KEY !== undefined ? [PRIVATE_KEY] : [],
-        //     //   accounts: {
-        //     //     mnemonic: MNEMONIC,
-        //     //   },
-        //     saveDeployments: true,
-        //     chainId: 11155111,
-        // },
+        sepolia: {
+            url: SEPOLIA_RPC_URL,
+            accounts: PRIVATE_KEY !== undefined ? [PRIVATE_KEY] : [],
+            //   accounts: {
+            //     mnemonic: MNEMONIC,
+            //   },
+            saveDeployments: true,
+            chainId: 11155111,
+        },
         // mainnet: {
         //     url: MAINNET_RPC_URL,
         //     accounts: PRIVATE_KEY !== undefined ? [PRIVATE_KEY] : [],
