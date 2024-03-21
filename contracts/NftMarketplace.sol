@@ -96,10 +96,9 @@ contract NftMarketplace is ReentrancyGuard {
         if (msg.value > listedItem.price)
             revert NftMarketplace__NotEnoughBalanceToBuy(nftAddress, tokenId, msg.value);
 
-        s_proceeds[listedItem.seller] = s_proceeds[listedItem.seller] + msg.value;
+        s_proceeds[listedItem.seller]  += msg.value;
         delete (s_listing[nftAddress][tokenId]);
         IERC721 nft = IERC721(nftAddress);
-
         nft.safeTransferFrom(listedItem.seller, msg.sender, tokenId);
         emit ItemBought(msg.sender, nftAddress, tokenId, listedItem.price);
     }
@@ -121,7 +120,7 @@ contract NftMarketplace is ReentrancyGuard {
         emit ItemUpdate(nftAddress, tokenId, msg.sender, newPrice) ;
     }
 
-    function widthdrawProceeeds () external {
+    function widthdrawProceeeds () external nonReentrant{
         uint256 proceeds = s_proceeds[msg.sender];
         if(proceeds <= 0 ) revert NftMarketplace__NotHasProceedToWidthdraw();
         s_proceeds[msg.sender] = 0;
