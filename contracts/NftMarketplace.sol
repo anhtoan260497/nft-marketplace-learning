@@ -11,6 +11,7 @@ error NftMarketplace__NotNftOwnerForListing();
 error NftMarketplace__NotListed(address nftAddress, uint256 tokenId);
 error NftMarketplace__NotEnoughBalanceToBuy(address nftAddress, uint256 tokenId, uint256 price);
 error NftMarketplace__NotHasProceedToWidthdraw();
+error NftMarketplace__SellerNotHoldingNft();
 error NftMarketplace__TransferFailed();
 
 contract NftMarketplace is ReentrancyGuard {
@@ -93,12 +94,13 @@ contract NftMarketplace is ReentrancyGuard {
         uint256 tokenId
     ) external payable isListed(nftAddress, tokenId) nonReentrant {
         Listing memory listedItem = s_listing[nftAddress][tokenId];
-        if (msg.value > listedItem.price)
+        if (msg.value < listedItem.price)
             revert NftMarketplace__NotEnoughBalanceToBuy(nftAddress, tokenId, msg.value);
 
         s_proceeds[listedItem.seller]  += msg.value;
         delete (s_listing[nftAddress][tokenId]);
         IERC721 nft = IERC721(nftAddress);
+        if(nft.ownerOf(tokenId) != s_listing[nftAddress][tokenId].seller) revert NftMarketplace__SellerNotHoldingNft();
         nft.safeTransferFrom(listedItem.seller, msg.sender, tokenId);
         emit ItemBought(msg.sender, nftAddress, tokenId, listedItem.price);
     }

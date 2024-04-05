@@ -16,7 +16,7 @@ module.exports = async () => {
         waitConfirmations: networkConfig?.[chainId]?.waitConfirmations || 1
     })
 
-    if (!developmentChains.includes(hre.network.name)) { await verify(nftMarketplace.address, args) }
+    if (!developmentChains.includes(hre.network.name) && process.env.ETHERSCAN_API_KEY) { await verify(nftMarketplace.address, args) }
 
     log('-----------------------------------------------------')
 }
