@@ -100,7 +100,7 @@ contract NftMarketplace is ReentrancyGuard {
         s_proceeds[listedItem.seller]  += msg.value;
         delete (s_listing[nftAddress][tokenId]);
         IERC721 nft = IERC721(nftAddress);
-        if(nft.ownerOf(tokenId) != s_listing[nftAddress][tokenId].seller) revert NftMarketplace__SellerNotHoldingNft();
+        if(nft.ownerOf(tokenId) != listedItem.seller) revert NftMarketplace__SellerNotHoldingNft();
         nft.safeTransferFrom(listedItem.seller, msg.sender, tokenId);
         emit ItemBought(msg.sender, nftAddress, tokenId, listedItem.price);
     }
