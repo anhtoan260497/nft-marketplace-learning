@@ -14,7 +14,7 @@ module.exports = async () => {
         args: []
     })
 
-    if (!developmentChains.includes(hre.network.name)) { 
+    if (!developmentChains.includes(hre.network.name) && process.env.ETHERSCAN_API_KEY) { 
         await verify(basicNft.address, args = []) 
     }
 }
