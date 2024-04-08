@@ -1,6 +1,8 @@
 const hre = require('hardhat')
 const { networkConfig, developmentChains } = require('../hardhat-network-config.js')
 const { verify } = require('../utils/verify.js')
+const fs = require('fs')
+const writeContractAddress = require('../utils/writeContractAddress.js')
 
 module.exports = async () => {
     const { deployments, getNamedAccounts } = hre
@@ -16,6 +18,7 @@ module.exports = async () => {
         waitConfirmations: networkConfig?.[chainId]?.waitConfirmations || 1
     })
 
+    writeContractAddress(chainId, {nftMarketplace : nftMarketplace.address})
     if (!developmentChains.includes(hre.network.name) && process.env.ETHERSCAN_API_KEY) { await verify(nftMarketplace.address, args) }
 
     log('-----------------------------------------------------')
