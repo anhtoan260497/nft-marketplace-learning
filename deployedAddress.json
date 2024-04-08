@@ -1,0 +1,16 @@
+[
+    {
+        "chainId": 31337,
+        "address": {
+            "basicNft": "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512",
+            "nftMarketplace": "0x5FbDB2315678afecb367f032d93F642f64180aa3"
+        }
+    },
+    {
+        "chainId": 11155111,
+        "address": {
+            "nftMarketplace": "0xBD2F11B1AE562FBdC6C7E270352a8F7582f8bcea",
+            "basicNft": "0x9d3a12299c2eF59c88A6B715508A2c8b2A10aa4d"
+        }
+    }
+]
